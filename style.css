@@ -1,0 +1,38 @@
+h1 {
+  display: inline;
+  font-weight: bolder;
+}
+
+body {
+  max-width:960px;
+}
+
+/* #content-container {
+  display: grid;
+  background-color: pink;
+  grid-template-columns: 100px 100px 100px 100px;
+  grid-template-rows: 50px 50px;
+  column-gap: 20px;
+  row-gap: 20px;  
+} */
+
+.productImage img {
+  height: 150px;
+}
+
+#content-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  grid-template-areas:
+    "side-panel . . ."
+    "side-panel text-content text-content text-content";
+}
+
+.side-panel {
+  grid-area: side-panel;
+}
+
+.text-content {
+  grid-area: text-content;
+}
