@@ -123,8 +123,8 @@ function displayResults() {
       testy.push(products[i].name);
       i++;
     }
-  } 
-  console.log(`i: ${i} vs products.length: ${products.length}`)
+  }
+  console.log(`i: ${i} vs products.length: ${products.length}`);
   sidePanelText.innerHTML = sideText;
   console.log(testy);
 }
