@@ -1,7 +1,7 @@
 'use strict';
 
 let testy = [];
-const VOTING_ROUNDS = 25; // ultimately this will be 25, testing with 3 for now
+const VOTING_ROUNDS = 5; // ultimately this will be 25, testing with 3 for now
 
 const image1Element = document.getElementById('image1');
 const image2Element = document.getElementById('image2');

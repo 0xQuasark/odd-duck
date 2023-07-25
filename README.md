@@ -2,4 +2,4 @@
 
 ## Lighthouse Score
 ![lab11](image.png)
-- Not quite at 80, though the problem seems to be specific to Github's Pages (lots of complaints about GPT prompts - of which I've not added anything 🤷‍♂️)
+- 100, yay! Turns out that some Chrome extensions were injecting code into my page and messing it up.
