@@ -1,16 +1,16 @@
+/* eslint-disable no-multi-spaces */
 'use strict';
 
-let testy = [];
 const VOTING_ROUNDS = 5; // ultimately this will be 25, testing with 3 for now
 
 const image1Element = document.getElementById('image1');
 const image2Element = document.getElementById('image2');
 const image3Element = document.getElementById('image3');
-const productContainer = document.getElementById('productContainer');
+const productContainer = document.getElementById('products-container');
 const statusContent = document.getElementById('status-box');      // setting the Voting/No Voting status
-const sidePanelText = document.getElementById('side-panel-text');
+const sidePanelText = document.getElementById('results-feedback');
 
-
+let previouslyUsedIndexes = [];
 let roundsVoted = 0;
 
 function Product (name, src) {
@@ -47,7 +47,6 @@ function displayProducts() {
   let randomIndex2 = Math.floor(Math.random() * products.length);
   let randomIndex3 = Math.floor(Math.random() * products.length);
 
-
   while (randomIndex2 === randomIndex1) {
     randomIndex2 = Math.floor(Math.random() * products.length);
   }
@@ -56,10 +55,30 @@ function displayProducts() {
     randomIndex3 = Math.floor(Math.random() * products.length);
   }
 
+  // Here's how we check if we've used images previously
+  if (previouslyUsedIndexes.length) {         // i.e. if this exists it's not our first time through this loop
+    while (previouslyUsedIndexes.includes(randomIndex1)) {
+      randomIndex1 = Math.floor(Math.random() * products.length);
+    }
+
+    while (previouslyUsedIndexes.includes(randomIndex2) && randomIndex2 === randomIndex1) {
+      randomIndex2 = Math.floor(Math.random() * products.length);
+    }
+
+    while (previouslyUsedIndexes.includes(randomIndex3) || randomIndex3 === randomIndex1 || randomIndex3 === randomIndex2) {
+      randomIndex3 = Math.floor(Math.random() * products.length);
+    }
+  }
+
+  previouslyUsedIndexes = [];
+  previouslyUsedIndexes.push(randomIndex1);
+  previouslyUsedIndexes.push(randomIndex2);
+  previouslyUsedIndexes.push(randomIndex3);
+
   image1Element.src = products[randomIndex1].src;
   image2Element.src = products[randomIndex2].src;
   image3Element.src = products[randomIndex3].src;
-  
+
   image1Element.alt = products[randomIndex1].name;
   image2Element.alt = products[randomIndex2].name;
   image3Element.alt = products[randomIndex3].name;
@@ -69,7 +88,6 @@ function displayProducts() {
   products[randomIndex3].timesSeen++;
 
   statusContent.textContent = `Votes remaining: ${VOTING_ROUNDS-roundsVoted}`;
-
 }
 
 function compareTimesClicked(a, b) {
@@ -86,59 +104,39 @@ function compareTimesClicked(a, b) {
 function displayResults() {
   let sideText = '';
   let i = 0;
-  // let nonZeroResults = true;
 
   products.sort(compareTimesClicked);
-  console.log(products);
 
   for (const currentProduct of products) {
     if (currentProduct.timeClicked || currentProduct.timesSeen) {
-      console.log(currentProduct.name);
+      // console.log(currentProduct.name);
       sideText += `${currentProduct.name} had ${currentProduct.timeClicked} votes, and was seen ${currentProduct.timesSeen} times.<br>`;
-      testy.push(currentProduct.name);
       i++;
     } else {
-      console.log('im outta here');
+      // console.log('im outta here');
     }
   }
-  // for (const currentProduct of products) {
-  //   if (products[i].timeClicked || products[i].timesSeen) {
-  //     console.log(products[i].name);
-  //     sideText += `${currentProduct.name} had ${currentProduct.timeClicked} votes, and was seen ${currentProduct.timesSeen} times.<br>`;
-  //     testy.push(currentProduct.name);
-  //   } else {
-  //     console.log('im outta here');
-  //   }
-  //   i++;
-  // }
 
   let remainingProducts = products.length - i;
-  console.log(remainingProducts);
+
   if (remainingProducts) {
-    console.log('remainingProducts: ' + remainingProducts);
-    sideText += `<p><p><p><p><p>There were ${remainingProducts} products that never seen. They are:<p>`;
+    sideText += `<br>There were <strong>${remainingProducts} products</strong> that are never seen. They are:<p>`;
 
     while (i < products.length) {
       sideText += `${products[i].name}<br>`;
-      testy.push(products[i].name);
       i++;
     }
   }
-  console.log(`i: ${i} vs products.length: ${products.length}`);
   sidePanelText.innerHTML = sideText;
-  console.log(testy);
 }
 
 function votingOver() {
   // alert('Exceeded maximum votes');
   productContainer.removeEventListener('click', handleProductClicks);
   statusContent.classList.add('grey');
-  statusContent.textContent = 'Voting Over, Click Here to View Results';
-  // console.log(statusContent.textContent);
+  statusContent.textContent = 'View Results';
 
   statusContent.addEventListener('click', displayResults);
-
-  console.log(products);
 }
 
 function handleProductClicks(event) {
@@ -150,14 +148,12 @@ function handleProductClicks(event) {
       if (products[i].name === event.target.alt) {
         products[i].timeClicked++;
         displayProducts();
+        break;
       }
     }
-    // console.log(`roundsVoted: ${roundsVoted}, VOTING_ROUNDS:${VOTING_ROUNDS}`);
-    // console.log(products);
   }
 }
 
 productContainer.addEventListener('click', handleProductClicks);
 
-// console.log(products);
 displayProducts();
