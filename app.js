@@ -1,7 +1,9 @@
 /* eslint-disable no-multi-spaces */
 'use strict';
 
-const VOTING_ROUNDS = 5; // ultimately this will be 25, testing with 3 for now
+const VOTING_ROUNDS = 25; // ultimately this will be 25, testing with 3 for now
+
+let products = load();
 
 const image1Element = document.getElementById('image1');
 const image2Element = document.getElementById('image2');
@@ -16,60 +18,42 @@ let roundsVoted = 0;
 let viewResultsString = 'View Results';
 let chartObj = null;
 
-function Product (name, src) {
+function Product (name, src, timesClicked = 0, timesSeen = 0) {
   this.name = name;
   this.src = src;
-  this.timeClicked = 0;
-  this.timesSeen = 0;
+  this.timesClicked = timesClicked;
+  this.timesSeen = timesSeen;
 }
 
-const products = [
-  new Product('bag', './img/bag.jpg'), 
-  new Product('banana', './img/banana.jpg'), 
-  new Product('bathroom', './img/bathroom.jpg'), 
-  new Product('boots', './img/boots.jpg'), 
-  new Product('breakfast', './img/breakfast.jpg'), 
-  new Product('bubblegum', './img/bubblegum.jpg'), 
-  new Product('chair', './img/chair.jpg'), 
-  new Product('cthulhu', './img/cthulhu.jpg'), 
-  new Product('dog-duck', './img/dog-duck.jpg'), 
-  new Product('dragon', './img/dragon.jpg'), 
-  new Product('pen', './img/pen.jpg'), 
-  new Product('pet-sweep', './img/pet-sweep.jpg'), 
-  new Product('scissors', './img/scissors.jpg'), 
-  new Product('shark', './img/shark.jpg'), 
-  new Product('sweep', './img/sweep.png'), 
-  new Product('tauntaun', './img/tauntaun.jpg'), 
-  new Product('unicorn', './img/unicorn.jpg'), 
-  new Product('water-can', './img/water-can.jpg'), 
-  new Product('wine-glass', './img/wine-glass.jpg'), 
-];
+function generateRandomNumber (){
+  return Math.floor(Math.random() * products.length);
+}
 
 function displayProducts() {
-  let randomIndex1 = Math.floor(Math.random() * products.length);
-  let randomIndex2 = Math.floor(Math.random() * products.length);
-  let randomIndex3 = Math.floor(Math.random() * products.length);
+  let randomIndex1 = generateRandomNumber();
+  let randomIndex2 = generateRandomNumber();
+  let randomIndex3 = generateRandomNumber();
 
   while (randomIndex2 === randomIndex1) {
-    randomIndex2 = Math.floor(Math.random() * products.length);
+    randomIndex2 = generateRandomNumber();
   }
 
   while (randomIndex3 === randomIndex1 || randomIndex3 === randomIndex2) {
-    randomIndex3 = Math.floor(Math.random() * products.length);
+    randomIndex3 = generateRandomNumber();
   }
 
   // Here's how we check if we've used images previously
   if (previouslyUsedIndexes.length) {         // i.e. if this exists it's not our first time through this loop
     while (previouslyUsedIndexes.includes(randomIndex1)) {
-      randomIndex1 = Math.floor(Math.random() * products.length);
+      randomIndex1 = generateRandomNumber();
     }
 
     while (previouslyUsedIndexes.includes(randomIndex2) && randomIndex2 === randomIndex1) {
-      randomIndex2 = Math.floor(Math.random() * products.length);
+      randomIndex2 = generateRandomNumber();
     }
 
     while (previouslyUsedIndexes.includes(randomIndex3) && randomIndex3 === randomIndex1 && randomIndex3 === randomIndex2) {
-      randomIndex3 = Math.floor(Math.random() * products.length);
+      randomIndex3 = generateRandomNumber();
     }
   }
 
@@ -96,12 +80,12 @@ function displayProducts() {
 
 function compareTimesClicked(a, b) {
   // This function courtesy of ChatGPT
-  if (b.timeClicked === a.timeClicked) {
-    // If timeClicked is equal, sort by timesSeen in descending order
+  if (b.timesClicked === a.timesClicked) {
+    // If timesClicked is equal, sort by timesSeen in descending order
     return b.timesSeen - a.timesSeen;
   }
-  // Sort by timeClicked in descending order
-  return b.timeClicked - a.timeClicked;
+  // Sort by timesClicked in descending order
+  return b.timesClicked - a.timesClicked;
 }
 
 function displayChart() {
@@ -114,7 +98,7 @@ function displayChart() {
     if (currentProduct.timesSeen > 0) {
       productNames.push(currentProduct.name);
       productTimesSeen.push(currentProduct.timesSeen);
-      productTimesClicked.push(currentProduct.timeClicked);
+      productTimesClicked.push(currentProduct.timesClicked);
     }
   }
 
@@ -146,7 +130,7 @@ function displayChart() {
       scales: {
         y: {
           beginAtZero: true,
-          suggestedMax: 1,
+          suggestedMax: 5,
         }
       }
     }
@@ -170,8 +154,8 @@ function displayReport() {
   products.sort(compareTimesClicked);
 
   for (const currentProduct of products) {
-    if (currentProduct.timeClicked || currentProduct.timesSeen) {
-      sideText += `${currentProduct.name} had ${currentProduct.timeClicked} votes, and was seen ${currentProduct.timesSeen} times.<br>`;
+    if (currentProduct.timesClicked || currentProduct.timesSeen) {
+      sideText += `${currentProduct.name} had ${currentProduct.timesClicked} votes, and was seen ${currentProduct.timesSeen} times.<br>`;
       i++;
     }
   }
@@ -206,11 +190,53 @@ function handleProductClicks(event) {
   } else {
     for (let i = 0; i < products.length; i++) {
       if (products[i].name === event.target.alt) {
-        products[i].timeClicked++;
+        products[i].timesClicked++;
         displayProducts();
+        save();
         break;
       }
     }
+  }
+}
+
+function save(){
+  let valuesToStore = JSON.stringify(products);
+  localStorage.setItem('productData', valuesToStore);
+}
+
+function load() {
+  let rawData = localStorage.getItem('productData');
+  let productData = JSON.parse(rawData);
+
+  if (!productData){
+    return [
+      new Product('bag', './img/bag.jpg'), 
+      new Product('banana', './img/banana.jpg'), 
+      new Product('bathroom', './img/bathroom.jpg'), 
+      new Product('boots', './img/boots.jpg'), 
+      new Product('breakfast', './img/breakfast.jpg'), 
+      new Product('bubblegum', './img/bubblegum.jpg'), 
+      new Product('chair', './img/chair.jpg'), 
+      new Product('cthulhu', './img/cthulhu.jpg'), 
+      new Product('dog-duck', './img/dog-duck.jpg'), 
+      new Product('dragon', './img/dragon.jpg'), 
+      new Product('pen', './img/pen.jpg'), 
+      new Product('pet-sweep', './img/pet-sweep.jpg'), 
+      new Product('scissors', './img/scissors.jpg'), 
+      new Product('shark', './img/shark.jpg'), 
+      new Product('sweep', './img/sweep.png'), 
+      new Product('tauntaun', './img/else auntaun.jpg'), 
+      new Product('unicorn', './img/unicorn.jpg'), 
+      new Product('water-can', './img/water-can.jpg'), 
+      new Product('wine-glass', './img/wine-glass.jpg'), 
+    ];
+  } else {
+    let arrayOfPreviousProducts = [];;
+    for (let i = 0; i < productData.length; i++){
+      let currProduct = productData[i];
+      arrayOfPreviousProducts.push(new Product(currProduct.name, currProduct.src, currProduct.timesClicked, currProduct.timesSeen));
+    }
+    return arrayOfPreviousProducts;
   }
 }
 
