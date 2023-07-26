@@ -1,5 +1,7 @@
 # odd-duck
 
 ## Lighthouse Score
-![lab11](image.png)
-- 100, yay! Turns out that some Chrome extensions were injecting code into my page and messing it up.
+- lab12 result: ![lab12](image.lab12.png)
+
+
+- lab11 result: ![lab11](image.lab11.png)
