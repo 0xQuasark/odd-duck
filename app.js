@@ -9,9 +9,13 @@ const image3Element = document.getElementById('image3');
 const productContainer = document.getElementById('products-container');
 const statusContent = document.getElementById('status-box');      // setting the Voting/No Voting status
 const sidePanelText = document.getElementById('results-feedback');
+const chartCanvas = document.getElementById('myChart');
 
 let previouslyUsedIndexes = [];
 let roundsVoted = 0;
+let viewResultsString = 'View Results';
+// let test = true;
+let chartObj = null;
 
 function Product (name, src) {
   this.name = name;
@@ -88,6 +92,7 @@ function displayProducts() {
   products[randomIndex3].timesSeen++;
 
   statusContent.textContent = `Votes remaining: ${VOTING_ROUNDS-roundsVoted}`;
+  // console.log(previouslyUsedIndexes);
 }
 
 function compareTimesClicked(a, b) {
@@ -100,8 +105,66 @@ function compareTimesClicked(a, b) {
   return b.timeClicked - a.timeClicked;
 }
 
+function displayChart() {
+  const productNames = [];
+  const productTimesSeen = [];
+  const productTimesClicked = [];
 
-function displayResults() {
+  for (let i = 0; i < products.length; i++) {
+    let currentProduct = products[i];
+    if (currentProduct.timesSeen > 0) {
+      productNames.push(currentProduct.name);
+      productTimesSeen.push(currentProduct.timesSeen);
+      productTimesClicked.push(currentProduct.timeClicked);
+    }
+  }
+
+  if (chartObj) {
+    // If the object already exists, then we destroy it
+    chartObj.clear();
+    chartObj.destroy();
+  }
+
+  // eslint-disable-next-line no-undef
+  chartObj = new Chart(chartCanvas, {
+    type: 'bar',
+    data: {
+      // labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+      labels: productNames,
+      datasets: [{
+        label: '# of Times Seen',
+        data: productTimesSeen,
+        borderWidth: 1,
+        backgroundColor: 'rgba(0, 0, 255, 0.5)',
+      }, {
+        label: '# of Times Clicked',
+        data: productTimesClicked,
+        borderWidth: 1,
+        backgroundColor: 'rgba(0, 128, 0, 0.5)',
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+          suggestedMax: 1,
+        }
+      }
+    }
+  });
+
+}
+
+
+function displayResults(event) {
+  if (event.target.textContent === viewResultsString) {
+    displayReport();    // This shows the text results in the left hand div. runs once
+  }
+  event.target.textContent = 'Update Chart';
+  displayChart();      // This generates a chart
+}
+
+function displayReport() {
   let sideText = '';
   let i = 0;
 
@@ -109,11 +172,8 @@ function displayResults() {
 
   for (const currentProduct of products) {
     if (currentProduct.timeClicked || currentProduct.timesSeen) {
-      // console.log(currentProduct.name);
       sideText += `${currentProduct.name} had ${currentProduct.timeClicked} votes, and was seen ${currentProduct.timesSeen} times.<br>`;
       i++;
-    } else {
-      // console.log('im outta here');
     }
   }
 
@@ -134,7 +194,8 @@ function votingOver() {
   // alert('Exceeded maximum votes');
   productContainer.removeEventListener('click', handleProductClicks);
   statusContent.classList.add('grey');
-  statusContent.textContent = 'View Results';
+  // statusContent.textContent = 'View Results';
+  statusContent.textContent = viewResultsString;
 
   statusContent.addEventListener('click', displayResults);
 }

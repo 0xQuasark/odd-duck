@@ -11,7 +11,7 @@ main {
 }
 
 div div {
-  border: thin solid red;
+  /* border: thin solid red; */
 }
 
 
@@ -27,18 +27,19 @@ div div {
 #side-panel-text {
   grid-row-start: 1;
   grid-row-end: 3;
-  background-color: pink;
+  /* background-color: pink; */
 }
 
 #visual-content {
-  background-color: blue;
+  /* background-color: gainsboro; */
+  margin-top: 20px;
 }
 
 #products-container {
   display: grid;
   grid-template-rows: 150px;
   grid-template-columns: auto auto auto;
-  background-color: green;
+  /* background-color: green; */
   height: max-content
 }
 
@@ -46,6 +47,11 @@ div div {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+img {
+  margin-top: 20px;
+  margin-left: 20px;
 }
 
 #products-container img {
