@@ -14,7 +14,6 @@ const chartCanvas = document.getElementById('myChart');
 let previouslyUsedIndexes = [];
 let roundsVoted = 0;
 let viewResultsString = 'View Results';
-// let test = true;
 let chartObj = null;
 
 function Product (name, src) {
@@ -69,7 +68,7 @@ function displayProducts() {
       randomIndex2 = Math.floor(Math.random() * products.length);
     }
 
-    while (previouslyUsedIndexes.includes(randomIndex3) || randomIndex3 === randomIndex1 || randomIndex3 === randomIndex2) {
+    while (previouslyUsedIndexes.includes(randomIndex3) && randomIndex3 === randomIndex1 && randomIndex3 === randomIndex2) {
       randomIndex3 = Math.floor(Math.random() * products.length);
     }
   }

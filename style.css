@@ -10,11 +10,6 @@ main {
   margin-top: 20px;
 }
 
-div div {
-  /* border: thin solid red; */
-}
-
-
 #content-container {
   display: grid;
   /* grid-template-rows: 150px 150px ; */
