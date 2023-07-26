@@ -78,6 +78,7 @@ img {
   background-color: #f8f8f8;
   cursor: pointer;
   user-select: none;
+  margin-bottom: 10px;
 }
 
 #status-box.grey:hover {
